@@ -77,26 +77,23 @@ class Tetris {
       score += 1;
     }
   }
-  changeRotation() {
+
+  changeRotationCounterClockwise() {
     let tempTemplate = [];
     for (let i = 0; i < this.template.length; i++)
       tempTemplate[i] = this.template[i].slice();
     let n = this.template.length;
-    for (let layer = 0; layer < n / 2; layer++) {
-      let first = layer;
-      let last = n - 1 - layer;
-      for (let i = first; i < last; i++) {
-        let offset = i - first;
-        let top = this.template[first][i];
-        this.template[first][i] = this.template[i][last]; // top = right
-        this.template[i][last] = this.template[last][last - offset]; //right = bottom
-        this.template[last][last - offset] =
-          this.template[last - offset][first];
-        //bottom = left
-        this.template[last - offset][first] = top; // left = top
+    // Transpose the matrix
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < i; j++) {
+        let temp = this.template[i][j];
+        this.template[i][j] = this.template[j][i];
+        this.template[j][i] = temp;
       }
     }
-
+    for (let i = 0; i < n; i++) {
+      this.template[i].reverse();
+    }
     for (let i = 0; i < this.template.length; i++) {
       for (let j = 0; j < this.template.length; j++) {
         if (this.template[i][j] == 0) continue;
@@ -111,8 +108,54 @@ class Tetris {
           this.template = tempTemplate;
           return false;
         }
+        if (gameMap[realY][realX].imageX != -1) {
+          this.template = tempTemplate;
+          return false;
+        }
       }
     }
+    return true;
+  }
+
+  changeRotationClockwise() {
+    let tempTemplate = [];
+    for (let i = 0; i < this.template.length; i++)
+      tempTemplate[i] = this.template[i].slice();
+    let n = this.template.length;
+    for (let layer = 0; layer < n / 2; layer++) {
+      let first = layer;
+      let last = n - 1 - layer;
+      for (let i = first; i < last; i++) {
+        let offset = i - first;
+        let top = this.template[first][i];
+        this.template[first][i] = this.template[last - offset][first]; // top = left
+        this.template[last - offset][first] =
+          this.template[last][last - offset]; //left = bottom
+        this.template[last][last - offset] = this.template[i][last]; //bottom = right
+        this.template[i][last] = top; // right = top
+      }
+    }
+    for (let i = 0; i < this.template.length; i++) {
+      for (let j = 0; j < this.template.length; j++) {
+        if (this.template[i][j] == 0) continue;
+        let realX = i + this.getTruncedPosition().x;
+        let realY = j + this.getTruncedPosition().y;
+        if (
+          realX < 0 ||
+          realX >= squareCountX ||
+          realY < 0 ||
+          realY >= squareCountY
+        ) {
+          this.template = tempTemplate;
+          return false;
+        }
+        if (gameMap[realY][realX].imageX != -1) {
+          this.template = tempTemplate;
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }
 
@@ -362,7 +405,8 @@ let resetVars = () => {
 
 window.addEventListener("keydown", (event) => {
   if (event.keyCode == 37) currentShape.moveLeft();
-  else if (event.keyCode == 38) currentShape.changeRotation();
+  else if (event.keyCode == 65) currentShape.changeRotationCounterClockwise();
+  else if (event.keyCode == 68) currentShape.changeRotationClockwise();
   else if (event.keyCode == 39) currentShape.moveRight();
   else if (event.keyCode == 40) currentShape.moveBottom();
 });
