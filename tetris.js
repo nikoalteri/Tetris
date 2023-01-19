@@ -404,11 +404,11 @@ let resetVars = () => {
 };
 
 window.addEventListener("keydown", (event) => {
-  if (event.keyCode == 37) currentShape.moveLeft();
-  else if (event.keyCode == 65) currentShape.changeRotationCounterClockwise();
-  else if (event.keyCode == 68) currentShape.changeRotationClockwise();
-  else if (event.keyCode == 39) currentShape.moveRight();
-  else if (event.keyCode == 40) currentShape.moveBottom();
+  if (event.keyCode == 65) currentShape.moveLeft();
+  else if (event.keyCode == 81) currentShape.changeRotationCounterClockwise();
+  else if (event.keyCode == 69) currentShape.changeRotationClockwise();
+  else if (event.keyCode == 68) currentShape.moveRight();
+  else if (event.keyCode == 83) currentShape.moveBottom();
 });
 
 resetVars();
